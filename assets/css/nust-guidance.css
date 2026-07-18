@@ -48,6 +48,44 @@ h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin: 0 0 1rem; }
 label { font-weight: 600; color: var(--text-primary); }
 input, select, button { font: inherit; }
 input, select { width: 100%; padding: 0.9rem 1rem; border-radius: 12px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.06); color: var(--text-primary); }
+
+/* Custom select arrow.
+   The native control paints its arrow in OS light chrome, which reads as a
+   bright artifact on these dark cards. Hide it and draw our own — a pseudo
+   element can't be attached to <select>, hence the wrapper div. */
+.select-wrapper { position: relative; width: 100%; }
+
+.select-wrapper select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    /* Reserve room so a long option label never runs under the arrow */
+    padding-right: 2.75rem;
+}
+
+/* Legacy Edge/IE draws its own expand button on top of everything */
+.select-wrapper select::-ms-expand { display: none; }
+
+.select-wrapper::after {
+    content: "▼";
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    font-size: 0.7rem;
+    line-height: 1;
+    color: var(--accent-color);
+    /* Clicks must fall through to the select underneath */
+    pointer-events: none;
+}
+
+.select-wrapper select:hover { border-color: rgba(0, 212, 255, 0.45); }
+.select-wrapper select:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
+
+/* The dropdown list itself is OS-rendered; set colours for the platforms
+   that honour them so it isn't white-on-white. */
+.select-wrapper option { background: var(--secondary-color); color: var(--text-primary); }
+
 .input-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 .input-row input { flex: 1 1 260px; }
 .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0.8rem 1.2rem; border-radius: 999px; border: none; cursor: pointer; text-decoration: none; font-weight: 600; transition: transform 0.2s ease, box-shadow 0.2s ease; }

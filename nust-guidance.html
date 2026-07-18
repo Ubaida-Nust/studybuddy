@@ -90,16 +90,18 @@
                             <button type="submit" class="btn btn-primary">Check Eligible Programs</button>
                         </div>
                         <label for="categoryFilter">Filter by category</label>
-                        <select id="categoryFilter">
-                            <option value="All">All</option>
-                            <option value="Engineering">Engineering</option>
-                            <option value="Computing">Computing</option>
-                            <option value="Sciences">Sciences</option>
-                            <option value="Business">Business</option>
-                            <option value="Social Sciences">Social Sciences</option>
-                            <option value="Law">Law</option>
-                            <option value="Design">Design</option>
-                        </select>
+                        <div class="select-wrapper">
+                            <select id="categoryFilter">
+                                <option value="All">All</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Computing">Computing</option>
+                                <option value="Sciences">Sciences</option>
+                                <option value="Business">Business</option>
+                                <option value="Social Sciences">Social Sciences</option>
+                                <option value="Law">Law</option>
+                                <option value="Design">Design</option>
+                            </select>
+                        </div>
                     </form>
 
                     <div id="resultsSummary" class="results-summary" aria-live="polite"></div>
@@ -120,16 +122,18 @@
                     <div class="table-toolbar">
                         <label class="sr-only" for="tableSearch">Search programs</label>
                         <input type="search" id="tableSearch" placeholder="Search program name">
-                        <select id="tableCategoryFilter">
-                            <option value="All">All categories</option>
-                            <option value="Engineering">Engineering</option>
-                            <option value="Computing">Computing</option>
-                            <option value="Sciences">Sciences</option>
-                            <option value="Business">Business</option>
-                            <option value="Social Sciences">Social Sciences</option>
-                            <option value="Law">Law</option>
-                            <option value="Design">Design</option>
-                        </select>
+                        <div class="select-wrapper">
+                            <select id="tableCategoryFilter">
+                                <option value="All">All categories</option>
+                                <option value="Engineering">Engineering</option>
+                                <option value="Computing">Computing</option>
+                                <option value="Sciences">Sciences</option>
+                                <option value="Business">Business</option>
+                                <option value="Social Sciences">Social Sciences</option>
+                                <option value="Law">Law</option>
+                                <option value="Design">Design</option>
+                            </select>
+                        </div>
                     </div>
 
                     <p class="table-hint">← Swipe the table sideways to see all columns →</p>
