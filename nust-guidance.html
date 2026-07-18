@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NUST Guidance 2025: use real NUST UG admissions closing merit data to estimate your eligibility for engineering, computing, sciences, business, and social science programs.">
+    <meta name="theme-color" content="#0f3460">
+    <meta name="robots" content="index,follow">
+    <title>NUST Guidance 2025 | StudyBuddy</title>
+    <link rel="canonical" href="https://ubaida-nust.github.io/myweb/nust-guidance.html">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/nust-guidance.css">
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="shortcut icon" href="./favicon.ico">
+    <link rel="apple-touch-icon" href="./favicon.ico">
+    <meta property="og:title" content="NUST Guidance 2025 | StudyBuddy">
+    <meta property="og:description" content="Estimate your NUST eligibility with 2025 closing merit data, a predictor tool, and a sortable merit table.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ubaida-nust.github.io/myweb/nust-guidance.html">
+    <meta property="og:image" content="https://ubaida-nust.github.io/myweb/favicon.svg">
+    <meta property="og:site_name" content="StudyBuddy">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="NUST Guidance 2025 | StudyBuddy">
+    <meta name="twitter:description" content="Estimate your NUST eligibility with 2025 closing merit data, a predictor tool, and a sortable merit table.">
+    <meta name="twitter:image" content="https://ubaida-nust.github.io/myweb/favicon.svg">
+</head>
+<body>
+    <nav class="navbar" aria-label="Primary navigation">
+        <div class="nav-container">
+            <a href="./index.html" class="logo" aria-label="StudyBuddy home">
+                <span class="logo-icon" aria-hidden="true">📚</span>
+                <span class="logo-text">StudyBuddy</span>
+            </a>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="./index.html" class="nav-link">Home</a></li>
+                <li><a href="./nust-guidance.html" class="nav-link active">NUST Guidance</a></li>
+            </ul>
+            <button type="button" class="hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navMenu">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <p class="eyebrow">NUST UG Admissions 2025</p>
+                <h1>NUST Guidance: check your 2025 eligibility with real closing merit data</h1>
+                <p class="hero-copy">Use this reference guide to estimate whether your aggregate puts you in range for engineering, computing, sciences, business, and social science programs at NUST.</p>
+                <div class="hero-badges">
+                    <span class="pill">Official Merit Reference</span>
+                    <span class="pill">Client-side predictor</span>
+                    <span class="pill">Mobile friendly</span>
+                </div>
+                <div class="contact-cta">
+                    <a href="https://wa.me/923108322449" class="btn btn-whatsapp" target="_blank" rel="noopener noreferrer">
+                        <span aria-hidden="true">💬</span> Contact Owner
+                    </a>
+                    <p class="contact-help">Have questions? Message us directly on WhatsApp.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section intro-banner">
+            <div class="container">
+                <div class="banner-card">
+                    <p><strong>Based on NUST's official 2025 UG Admissions Final Merit List.</strong> This is a reference guide only — actual 2026 closing merit will vary. Not an official NUST tool.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section predictor-section" id="predictor">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow">Section 1</p>
+                    <h2>Aggregate-based department predictor</h2>
+                    <p>Enter your calculated NUST aggregate and see which programs in the 2025 merit list you meet or exceed.</p>
+                </div>
+
+                <div class="predictor-card">
+                    <form id="predictorForm" class="predictor-form">
+                        <label for="aggregateInput">Your NUST aggregate (%)</label>
+                        <div class="input-row">
+                            <input type="number" id="aggregateInput" min="0" max="100" step="0.01" placeholder="e.g. 60" required>
+                            <button type="submit" class="btn btn-primary">Check Eligible Programs</button>
+                        </div>
+                        <label for="categoryFilter">Filter by category</label>
+                        <select id="categoryFilter">
+                            <option value="All">All</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Computing">Computing</option>
+                            <option value="Sciences">Sciences</option>
+                            <option value="Business">Business</option>
+                            <option value="Social Sciences">Social Sciences</option>
+                            <option value="Law">Law</option>
+                            <option value="Design">Design</option>
+                        </select>
+                    </form>
+
+                    <div id="resultsSummary" class="results-summary" aria-live="polite"></div>
+                    <div id="resultsList" class="results-grid"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section table-section" id="table">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow">Section 2</p>
+                    <h2>Sortable merit table</h2>
+                    <p>Search a specific program or sort the full merit list by any column.</p>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-toolbar">
+                        <label class="sr-only" for="tableSearch">Search programs</label>
+                        <input type="search" id="tableSearch" placeholder="Search program name">
+                        <select id="tableCategoryFilter">
+                            <option value="All">All categories</option>
+                            <option value="Engineering">Engineering</option>
+                            <option value="Computing">Computing</option>
+                            <option value="Sciences">Sciences</option>
+                            <option value="Business">Business</option>
+                            <option value="Social Sciences">Social Sciences</option>
+                            <option value="Law">Law</option>
+                            <option value="Design">Design</option>
+                        </select>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table id="meritTable">
+                            <thead>
+                                <tr>
+                                    <th data-sort="program">Program</th>
+                                    <th data-sort="school">School</th>
+                                    <th data-sort="netMarks">NET Marks</th>
+                                    <th data-sort="aggregate">Aggregate %</th>
+                                    <th data-sort="closingMP">Closing Merit Position</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <p class="table-notice">* corresponds to fields introduced for the first time in NUST UG Admissions 2025. Figures shown are closing merits with corresponding closing merit positions, percentage aggregates, and NET marks from NUST's final merit list 2025.</p>
+                    <p class="credit-line">Data source: NUST Official Merit List 2025</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section image-section" id="merit-image">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow">Section 3</p>
+                    <h2>NUST 2025 official closing merit list</h2>
+                    <p>View the complete final merit list image below, or use the calculator above to check your eligibility instantly.</p>
+                </div>
+
+                <div class="image-card">
+                    <figure class="merit-figure" role="button" tabindex="0" aria-label="Open NUST 2025 merit list image in fullscreen">
+                        <picture>
+                            <source type="image/webp" srcset="assets/images/nust-meritlist-2025.webp">
+                            <img src="./assets/images/nust-meritlist-2025.jpg" alt="NUST 2025 UG Admissions Final Closing Merit List showing Net marks, Aggregate percentage, and Closing Merit Position for all schools and programs across Engineering, Sciences, Business, and Social Sciences." loading="lazy" decoding="async">
+                        </picture>
+                    </figure>
+                    <a href="./assets/images/nust-meritlist-2025.jpg" class="btn btn-secondary" download>Download Image</a>
+                    <p class="credit-line">Source: NUST Official UG Admissions 2025 Final Merit List</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section info-section" id="info">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow">Section 4</p>
+                    <h2>General NUST information</h2>
+                    <p>Quick reminders on campuses, fees, campus culture, and merit list timelines.</p>
+                </div>
+
+                <div class="info-grid">
+                    <details class="info-card" open>
+                        <summary>Campuses</summary>
+                        <p>NUST has 6 campuses — Islamabad (H-12 main), Rawalpindi, Risalpur, Karachi, Quetta and the main academic campus in Islamabad.</p>
+                    </details>
+                    <details class="info-card">
+                        <summary>Fee structure</summary>
+                        <p>Fees vary by program and campus. Always confirm the latest rates on the official NUST admission website before making a decision.</p>
+                    </details>
+                    <details class="info-card">
+                        <summary>Social life & campus culture</summary>
+                        <p>NUST offers clubs, societies, events, hostel life, sports, and student communities that make campus life vibrant for students.</p>
+                    </details>
+                    <details class="info-card">
+                        <summary>Merit list release timeline</summary>
+                        <p>Merit list release dates vary every year. Confirm the latest schedule on the official UG admissions portal.</p>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <section class="section faq-section" id="faq">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow">Section 5</p>
+                    <h2>Frequently Asked Questions</h2>
+                    <p>Concise answers to common questions about NUST merit positions, selection lists, hostel admission, and planning.</p>
+                </div>
+
+                <div class="faq-list" role="list">
+                    <article class="faq-item" role="listitem">
+                        <h3>
+                            <button class="faq-question" type="button" aria-expanded="false">
+                                What is a merit position?
+                            </button>
+                        </h3>
+                        <div class="faq-answer" hidden>
+                            <p>A merit position is similar to the position you'd get in your class based on your marks. NUST calculates your aggregate using: 10% SSC/Matric, 15% HSSC/FSc, and 75% NET score. Students are then ranked according to their aggregate — the student with the highest aggregate gets Merit Position #1, the next highest gets Merit Position #2, and so on. Merit positions are assigned separately for different categories: Engineering, Computing, NBS & Social Sciences, Natural Sciences, Applied Sciences, Law (LLB), and Architecture — each program has its own separate merit position list.</p>
+                        </div>
+                    </article>
+
+                    <article class="faq-item" role="listitem">
+                        <h3>
+                            <button class="faq-question" type="button" aria-expanded="false">
+                                What happens after NET-4 (final NET attempt)?
+                            </button>
+                        </h3>
+                        <div class="faq-answer" hidden>
+                            <p>Once the complete NET-4 result is announced, NUST usually releases the Merit List within 24-72 hours, showing your merit position(s) and last year's closing merit position(s) for the programs you applied to. After the merit list is announced, NUST normally gives a final opportunity to change your preference list, usually for 24-48 hours — after this deadline, the preference list is locked. The 1st Selection List is then announced within the next few days, and students generally get 3-5 working days to submit their dues after being selected. Subsequent selection lists are usually announced with a gap of 3-7 days. Since orientation is typically expected in the first week of September, NUST usually announces 4-6 selection lists before orientation, based on previous years' patterns.</p>
+                        </div>
+                    </article>
+
+                    <article class="faq-item" role="listitem">
+                        <h3>
+                            <button class="faq-question" type="button" aria-expanded="false">
+                                How does hostel admission work?
+                            </button>
+                        </h3>
+                        <div class="faq-answer" hidden>
+                            <p>As soon as your name appears in a selection list, the hostel application form becomes available on your admission portal. Hostel allotments are generally made on a first-come, first-served basis, so it's advisable to apply as early as possible after being selected.</p>
+                        </div>
+                    </article>
+
+                    <article class="faq-item" role="listitem">
+                        <h3>
+                            <button class="faq-question" type="button" aria-expanded="false">
+                                Why have closing aggregates fluctuated in recent years?
+                            </button>
+                        </h3>
+                        <div class="faq-answer" hidden>
+                            <p>Over the last few years, several factors caused significant changes in closing merits of popular programs: an increase in available seats, introduction of new Engineering and Computing programs, changes in the NET pattern for pre-medical students applying to Computing programs, inclusion of pre-medical students in Engineering programs without requiring additional Mathematics, and significant fee increases. These factors caused large fluctuations, with some programs changing by hundreds or even thousands of merit positions. For upcoming admission cycles, if no major policy changes occur, the probability of large deviation in closing merit positions is generally lower than in years with major changes.</p>
+                        </div>
+                    </article>
+
+                    <article class="faq-item" role="listitem">
+                        <h3>
+                            <button class="faq-question" type="button" aria-expanded="false">
+                                How should you use last year's closing merit positions?
+                            </button>
+                        </h3>
+                        <div class="faq-answer" hidden>
+                            <p>Based on recent trends, it's reasonable to assume that this year's closing merit positions may remain relatively close to last year's — though this does NOT mean they'll be exactly the same. For example: if last year's closing merit position for a program was 1000, and your merit position is below 900, your chances of selection are generally considered quite good — but this is only a rough estimate, not a guarantee.</p>
+                        </div>
+                    </article>
+
+                    <article class="faq-item" role="listitem">
+                        <h3>
+                            <button class="faq-question" type="button" aria-expanded="false">
+                                Should you rely only on NUST while waiting for selection lists?
+                            </button>
+                        </h3>
+                        <div class="faq-answer" hidden>
+                            <p>Regardless of how strong your chances appear, always keep 2-3 backup university options and do not rely solely on NUST until you have a confirmed admission offer. If your NUST admission is uncertain and you receive an offer elsewhere, it's often safer to pay the other university's dues while waiting for NUST's selection lists — if you later get into NUST, you can switch and apply for a refund under the other university's policy. Waiting only for NUST is risky, since missing both opportunities could cost you a gap year, which is usually a far greater loss than a few thousand rupees in provisional dues.</p>
+                        </div>
+                    </article>
+                </div>
+
+                <p class="faq-disclaimer">This guidance is based on general NUST admission trends and past patterns — not official NUST policy. Please verify time-sensitive details (like exact selection list dates and merit calculations) on NUST's official admissions portal at ugadmissions.nust.edu.pk.</p>
+            </div>
+        </section>
+    </main>
+
+    <div id="lightbox" class="lightbox" aria-hidden="true">
+        <button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close preview">×</button>
+        <div class="lightbox-content">
+            <img id="lightboxImage" src="" alt="Fullscreen view of the NUST 2025 merit list">
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 StudyBuddy · Built for students preparing for NUST admissions.</p>
+            <div class="footer-contact">
+                <a href="https://wa.me/923108322449" class="btn btn-whatsapp btn-small" target="_blank" rel="noopener noreferrer">
+                    <span aria-hidden="true">💬</span> Chat with Us on WhatsApp
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is a merit position?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A merit position is similar to the position you'd get in your class based on your marks. NUST calculates your aggregate using: 10% SSC/Matric, 15% HSSC/FSc, and 75% NET score. Students are then ranked according to their aggregate — the student with the highest aggregate gets Merit Position #1, the next highest gets Merit Position #2, and so on. Merit positions are assigned separately for different categories: Engineering, Computing, NBS & Social Sciences, Natural Sciences, Applied Sciences, Law (LLB), and Architecture — each program has its own separate merit position list."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What happens after NET-4 (final NET attempt)?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Once the complete NET-4 result is announced, NUST usually releases the Merit List within 24-72 hours, showing your merit position(s) and last year's closing merit position(s) for the programs you applied to. After the merit list is announced, NUST normally gives a final opportunity to change your preference list, usually for 24-48 hours — after this deadline, the preference list is locked. The 1st Selection List is then announced within the next few days, and students generally get 3-5 working days to submit their dues after being selected. Subsequent selection lists are usually announced with a gap of 3-7 days. Since orientation is typically expected in the first week of September, NUST usually announces 4-6 selection lists before orientation, based on previous years' patterns."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does hostel admission work?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "As soon as your name appears in a selection list, the hostel application form becomes available on your admission portal. Hostel allotments are generally made on a first-come, first-served basis, so it's advisable to apply as early as possible after being selected."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why have closing aggregates fluctuated in recent years?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Over the last few years, several factors caused significant changes in closing merits of popular programs: an increase in available seats, introduction of new Engineering and Computing programs, changes in the NET pattern for pre-medical students applying to Computing programs, inclusion of pre-medical students in Engineering programs without requiring additional Mathematics, and significant fee increases. These factors caused large fluctuations, with some programs changing by hundreds or even thousands of merit positions. For upcoming admission cycles, if no major policy changes occur, the probability of large deviation in closing merit positions is generally lower than in years with major changes."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How should you use last year's closing merit positions?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Based on recent trends, it's reasonable to assume that this year's closing merit positions may remain relatively close to last year's — though this does NOT mean they'll be exactly the same. For example: if last year's closing merit position for a program was 1000, and your merit position is below 900, your chances of selection are generally considered quite good — but this is only a rough estimate, not a guarantee."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Should you rely only on NUST while waiting for selection lists?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Regardless of how strong your chances appear, always keep 2-3 backup university options and do not rely solely on NUST until you have a confirmed admission offer. If your NUST admission is uncertain and you receive an offer elsewhere, it's often safer to pay the other university's dues while waiting for NUST's selection lists — if you later get into NUST, you can switch and apply for a refund under the other university's policy. Waiting only for NUST is risky, since missing both opportunities could cost you a gap year, which is usually a far greater loss than a few thousand rupees in provisional dues."
+          }
+        }
+      ]
+    }
+    </script>
+    <script src="./js/nust-merit-data.js"></script>
+    <script src="./js/nust-guidance.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+/* chat-overrides.css
+   Override n8n chat styles. Tweak colors, fonts and sizes here.
+   If the library uses shadow DOM theming, prefer passing theme options to createChat().
+*/
+
+/* Ensure font consistency with the site */
+#n8n-chat { font-family: 'Poppins', sans-serif; }
+
+/* Header / App bar */
+#n8n-chat .n8n-chat__header,
+#n8n-chat .n8n-chat-header {
+  background: linear-gradient(90deg,#0b6efd,#6610f2) !important;
+  color: #ffffff !important;
+}
+
+/* Message bubbles */
+#n8n-chat .n8n-chat__message--user,
+#n8n-chat .n8n-chat-message.user {
+  background: #e6f0ff !important;
+  color: #0b2a66 !important;
+  border-radius: 14px !important;
+}
+#n8n-chat .n8n-chat__message--bot,
+#n8n-chat .n8n-chat-message.bot {
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+  border-radius: 14px !important;
+}
+
+/* Input area */
+#n8n-chat .n8n-chat__input,
+#n8n-chat .n8n-chat-input {
+  border-top: 1px solid rgba(0,0,0,0.06) !important;
+  background: #ffffff !important;
+}
+#n8n-chat .n8n-chat__input textarea,
+#n8n-chat .n8n-chat-input textarea {
+  font-size: 14px !important;
+  font-family: inherit !important;
+}
+
+/* Buttons */
+#n8n-chat .n8n-chat__button,
+#n8n-chat .n8n-chat-button,
+#n8n-chat button {
+  background: #0b6efd !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  box-shadow: none !important;
+}
+
+/* Quick size and position tweaks */
+#n8n-chat {
+  right: 20px !important;
+  bottom: 20px !important;
+  max-width: 420px !important;
+}
+
+@media (max-width:600px){
+  #n8n-chat { right: 12px !important; left: 12px !important; bottom: 12px !important; max-height:70vh; }
+}
