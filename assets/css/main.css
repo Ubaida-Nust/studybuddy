@@ -15,6 +15,24 @@
     --card-border: rgba(0, 212, 255, 0.1);
     --button-shadow: 0 8px 32px rgba(0, 212, 255, 0.1);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Layout */
+    --navbar-height: 70px;
+    --content-max: 1200px;
+    --radius-card: 16px;
+    --radius-pill: 50px;
+
+    /* Spacing scale — use these instead of ad-hoc rem values */
+    --space-xs: 0.5rem;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --section-gap: clamp(3rem, 7vw, 5rem);
+
+    /* Elevation */
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.18);
+    --shadow-card-hover: 0 20px 50px rgba(0, 212, 255, 0.15);
 }
 
 html {
@@ -79,6 +97,7 @@ img {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1.5rem;
 }
 
 .logo {
@@ -100,7 +119,13 @@ img {
 .nav-menu {
     display: flex;
     list-style: none;
-    gap: 2rem;
+    align-items: center;
+    gap: clamp(0.75rem, 1.6vw, 2rem);
+    min-width: 0;
+}
+
+.nav-menu .nav-link {
+    white-space: nowrap;
 }
 
 .nav-link,
@@ -138,12 +163,18 @@ img {
     transition: width 0.3s ease;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-link.active {
     color: var(--accent-color);
 }
 
-.nav-link:hover::after {
+.nav-link:hover::after,
+.nav-link.active::after {
     width: 100%;
+}
+
+.navbar.is-scrolled {
+    box-shadow: 0 12px 40px rgba(0, 212, 255, 0.1);
 }
 
 .hamburger {
@@ -168,9 +199,76 @@ img {
     transition: var(--transition);
 }
 
+/* Mobile navigation — phones through large tablets.
+   The 9-item menu needs ~1025px to sit on one line beside the logo, so the
+   off-canvas panel covers everything below that. */
+@media (max-width: 1024px) {
+    .hamburger {
+        display: flex;
+    }
+
+    .nav-menu {
+        position: fixed;
+        left: -100%;
+        top: var(--navbar-height, 70px);
+        flex-direction: column;
+        align-items: stretch;
+        background: rgba(15, 52, 96, 0.97);
+        backdrop-filter: blur(12px);
+        width: min(88vw, 320px);
+        text-align: left;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        gap: 0;
+        padding: 0.5rem 0 1rem;
+        max-height: calc(100dvh - var(--navbar-height, 70px));
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+        border-right: 1px solid var(--card-border);
+        border-radius: 0 0 16px 0;
+    }
+
+    .nav-menu.active {
+        left: 0;
+    }
+
+    .nav-link {
+        display: block;
+        padding: 0.9rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    .nav-link::after {
+        display: none;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus-visible {
+        background: rgba(0, 212, 255, 0.1);
+    }
+
+    /* Dim the page behind the open menu */
+    .nav-scrim {
+        position: fixed;
+        inset: var(--navbar-height, 70px) 0 0;
+        background: rgba(5, 15, 30, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        z-index: 999;
+    }
+
+    body.menu-open .nav-scrim {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
 /* Home Section */
 .home {
     min-height: 100vh;
+    /* svh avoids the jump when mobile browser toolbars show/hide */
+    min-height: 100svh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -224,9 +322,11 @@ img {
 }
 
 .btn {
+    position: relative;
+    overflow: hidden;
     padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 50px;
+    border-radius: var(--radius-pill);
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
     cursor: pointer;
@@ -292,6 +392,23 @@ img {
     transform: translateY(-2px);
 }
 
+/* Ripple — element is injected by main.js on button hover */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(0);
+    animation: ripple-animation 0.6s ease-out;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
 .btn-large {
     padding: 1rem 3rem;
     font-size: 1.1rem;
@@ -304,7 +421,8 @@ img {
 
 /* Section Styles */
 section {
-    padding: 5rem 0;
+    padding: var(--section-gap) 0;
+    scroll-margin-top: var(--navbar-height);
 }
 
 .section-title {
@@ -345,16 +463,24 @@ section {
     background: var(--card-bg);
     backdrop-filter: blur(10px);
     border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 2rem;
+    border-radius: var(--radius-card);
+    padding: var(--space-xl);
     transition: var(--transition);
     animation: fadeInUp 0.6s ease-out;
+    /* column layout pins the button block to the bottom so cards in a row line up */
+    display: flex;
+    flex-direction: column;
+}
+
+.test-card .card-buttons {
+    margin-top: auto;
+    padding-top: var(--space-xs);
 }
 
 .test-card:hover {
     transform: translateY(-8px);
     border-color: rgba(0, 212, 255, 0.3);
-    box-shadow: 0 20px 50px rgba(0, 212, 255, 0.15);
+    box-shadow: var(--shadow-card-hover);
 }
 
 .card-header {
@@ -385,10 +511,102 @@ section {
     line-height: 1.6;
 }
 
-.card-buttons {
+/* Resource links inside cards.
+   These are lists of links with long, uneven labels ("Basic Math / Quantitative
+   Lec"), which is exactly what centred pills handle worst — a two-column pill
+   grid wrapped them onto three lines and stranded odd counts at half width.
+   Full-width rows give every label the same left edge and room to breathe. */
+.card-buttons,
+.tricks-links {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    grid-template-columns: 1fr;
+    gap: var(--space-xs);
+    align-content: start;
+}
+
+.card-buttons .btn,
+.tricks-links .btn {
+    /* Flex rather than fixed grid tracks: a link whose label is a bare text
+       node still lays out correctly instead of collapsing to one char per line. */
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+    background: rgba(0, 212, 255, 0.05);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: left;
+    line-height: 1.4;
+    white-space: normal;
+    transition: var(--transition);
+}
+
+/* Fixed-width icon slot so every label starts on the same left edge */
+.card-buttons .btn > .btn-icon,
+.tricks-links .btn > .btn-icon {
+    flex: 0 0 1.25rem;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.card-buttons .btn > span:not(.btn-icon),
+.tricks-links .btn > span:not(.btn-icon) {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.card-buttons .btn::after,
+.tricks-links .btn::after {
+    flex: 0 0 auto;
+}
+
+/* Chevron affordance */
+.card-buttons .btn::after,
+.tricks-links .btn::after {
+    content: '→';
+    color: var(--accent-color);
+    opacity: 0.5;
+    font-size: 0.95rem;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.card-buttons .btn:hover,
+.tricks-links .btn:hover,
+.card-buttons .btn:focus-visible,
+.tricks-links .btn:focus-visible {
+    background: rgba(0, 212, 255, 0.12);
+    border-color: rgba(0, 212, 255, 0.45);
+    transform: none;
+    box-shadow: none;
+    color: var(--text-primary);
+}
+
+.card-buttons .btn:hover::after,
+.tricks-links .btn:hover::after {
+    opacity: 1;
+    transform: translateX(3px);
+}
+
+/* The main drive/material link is the primary action in each card */
+.card-buttons .btn.is-primary {
+    background: rgba(0, 212, 255, 0.16);
+    border-color: rgba(0, 212, 255, 0.5);
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.card-buttons .btn.is-primary:hover {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #0f3460;
+}
+
+.card-buttons .btn.is-primary:hover::after {
+    color: #0f3460;
 }
 
 /* Materials Section */
@@ -396,54 +614,62 @@ section {
     background: linear-gradient(135deg, rgba(22, 33, 62, 0.5), rgba(15, 52, 96, 0.5));
 }
 
-.materials-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
+/* Coming Soon panels — shared by the Materials and Resources sections */
+.coming-soon-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-xl);
 }
 
-.material-card {
+.coming-soon-card {
+    position: relative;
     background: var(--card-bg);
     backdrop-filter: blur(10px);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 2rem;
+    border: 1px dashed rgba(0, 212, 255, 0.35);
+    border-radius: var(--radius-card);
+    padding: clamp(2rem, 5vw, 3rem);
     text-align: center;
-    transition: var(--transition);
+    max-width: 640px;
+    width: 100%;
     animation: fadeInUp 0.6s ease-out;
 }
 
-.material-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(0, 212, 255, 0.3);
-    box-shadow: 0 20px 50px rgba(0, 212, 255, 0.15);
+.coming-soon-badge {
+    display: inline-block;
+    margin-bottom: var(--space-md);
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius-pill);
+    background: rgba(0, 212, 255, 0.14);
+    border: 1px solid var(--card-border);
+    color: var(--accent-color);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
 }
 
-.material-header {
-    margin-bottom: 1rem;
-}
-
-.material-icon {
-    font-size: 3rem;
+.coming-soon-icon {
     display: block;
-    margin-bottom: 1rem;
+    font-size: clamp(2.5rem, 8vw, 3.25rem);
+    margin-bottom: var(--space-md);
+    opacity: 0.9;
 }
 
-.material-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 0.5rem;
+.coming-soon-card h3 {
+    font-size: clamp(1.15rem, 3.5vw, 1.5rem);
+    margin-bottom: var(--space-sm);
+    color: var(--accent-color);
+    line-height: 1.35;
 }
 
-.material-description {
+.coming-soon-card p {
     color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
-}
-
-.material-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
+    font-size: 0.98rem;
+    line-height: 1.7;
+    margin-bottom: var(--space-lg);
+    max-width: 48ch;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* WhatsApp Community Section */
@@ -475,13 +701,13 @@ section {
 }
 
 .whatsapp-card {
-    background: linear-gradient(135deg, rgba(37, 211, 102, 0.2), rgba(22, 33, 62, 0.5));
+    background: linear-gradient(135deg, rgba(37, 211, 102, 0.16), rgba(22, 33, 62, 0.55));
     backdrop-filter: blur(10px);
-    border: 2px solid rgba(37, 211, 102, 0.3);
+    border: 1px solid rgba(37, 211, 102, 0.3);
     border-radius: 20px;
-    padding: 3rem;
+    padding: clamp(1.75rem, 5vw, 3rem);
     text-align: center;
-    max-width: 600px;
+    max-width: 640px;
     width: 100%;
     animation: slideUp 0.8s ease-out;
     transition: var(--transition);
@@ -489,97 +715,106 @@ section {
 }
 
 .whatsapp-card:hover {
-    transform: translateY(-10px);
+    transform: translateY(-6px);
     border-color: rgba(37, 211, 102, 0.5);
     box-shadow: 0 30px 80px rgba(37, 211, 102, 0.2);
 }
 
 .whatsapp-header {
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-lg);
 }
 
-.whatsapp-icon {
-    font-size: 3.5rem;
-    display: block;
-    margin-bottom: 1rem;
-    animation: float 3s ease-in-out infinite;
+/* Brand logo in a rounded tile rather than a bare emoji */
+.whatsapp-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: var(--space-md);
+    border-radius: 18px;
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    color: #fff;
+    box-shadow: 0 12px 30px rgba(37, 211, 102, 0.35);
 }
 
 .whatsapp-card h2 {
-    font-size: 2rem;
+    font-family: 'Montserrat', sans-serif;
+    /* clamp keeps the heading off a third line on small phones */
+    font-size: clamp(1.4rem, 5vw, 2rem);
     color: #25d366;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-sm);
     font-weight: 700;
+    line-height: 1.25;
 }
 
 .whatsapp-description {
     color: var(--text-secondary);
-    font-size: 1.05rem;
+    font-size: 1rem;
     line-height: 1.7;
-    margin-bottom: 1.5rem;
+    max-width: 46ch;
+    margin: 0 auto;
 }
 
+/* A real list, two columns where there is room, so the card stays short */
 .whatsapp-features {
-    background: rgba(37, 211, 102, 0.1);
-    border-left: 4px solid #25d366;
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 2rem;
-    color: var(--text-secondary);
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: var(--space-xs) var(--space-md);
     text-align: left;
-    display: inline-block;
-    line-height: 2;
-    font-size: 0.95rem;
+    margin-bottom: var(--space-xl);
 }
 
-.whatsapp-features strong {
+.whatsapp-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    padding: 0.35rem 0;
+}
+
+.whatsapp-features li::before {
+    content: '✓';
+    flex: 0 0 auto;
     color: #25d366;
-    margin-right: 0.5rem;
+    font-weight: 700;
+}
+
+/* WhatsApp-green CTA — the old one was cyan inside a green section */
+.btn-whatsapp {
+    gap: 0.6rem;
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
+}
+
+.btn-whatsapp:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(37, 211, 102, 0.45);
+    color: #fff;
+}
+
+.btn-whatsapp:focus-visible {
+    outline: 3px solid #25d366;
+    outline-offset: 4px;
+}
+
+.btn-brand-icon {
+    flex: 0 0 auto;
+}
+
+.whatsapp-note {
+    margin-top: var(--space-md);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
 }
 
 /* Resources Section */
 .resources {
     background: linear-gradient(135deg, rgba(15, 52, 96, 0.5), rgba(22, 33, 62, 0.5));
-}
-
-.resources-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-}
-
-.resource-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 2.5rem 2rem;
-    text-align: center;
-    transition: var(--transition);
-    animation: fadeInUp 0.6s ease-out;
-}
-
-.resource-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(0, 212, 255, 0.3);
-    box-shadow: 0 20px 50px rgba(0, 212, 255, 0.15);
-}
-
-.resource-icon {
-    font-size: 3.5rem;
-    margin-bottom: 1.5rem;
-    display: block;
-}
-
-.resource-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 0.75rem;
-}
-
-.resource-card p {
-    color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
 }
 
 /* About Section */
@@ -589,89 +824,168 @@ section {
 
 .about-content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: center;
+    /* min(100%, 260px) means the aside can never demand more width than the
+       container has, so this collapses to one column on its own — the media
+       query below just sets the exact point and the text-column minimum. */
+    grid-template-columns: minmax(min(100%, 260px), 300px) 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
     margin-top: 3rem;
 }
 
-.about-image {
+@media (max-width: 860px) {
+    .about-content {
+        grid-template-columns: 1fr;
+        gap: var(--space-xl);
+        justify-items: center;
+    }
+
+    .about-card {
+        max-width: 380px;
+        width: 100%;
+    }
+
+    .about-text {
+        max-width: 640px;
+    }
+}
+
+@media (max-width: 860px) {
+}
+
+/* --- Profile card --- */
+.about-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-card);
+    padding: var(--space-xl) var(--space-lg);
     text-align: center;
-    position: relative;
+    box-shadow: var(--shadow-card);
 }
 
 .creator-photo {
-    width: 250px;
-    height: 250px;
+    width: 100%;
+    max-width: 280px;
+    aspect-ratio: 1;
+    height: auto;
     object-fit: cover;
-    border-radius: 16px;
+    /* The source is a wide environmental shot; bias the crop upward so the
+       subject is not sliced off at the chin. */
+    object-position: center 30%;
+    border-radius: 14px;
     border: 2px solid var(--accent-color);
-    box-shadow: 0 20px 50px rgba(0, 212, 255, 0.15);
-    animation: float 3s ease-in-out infinite;
+    box-shadow: 0 16px 40px rgba(0, 212, 255, 0.15);
     display: block;
-    margin: 0 auto;
+    margin: 0 auto var(--space-lg);
 }
 
-.profile-placeholder {
-    width: 250px;
-    height: 250px;
-    margin: 0 auto;
-    background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.1));
-    border: 2px solid var(--accent-color);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 5rem;
-    box-shadow: 0 20px 50px rgba(0, 212, 255, 0.15);
-    animation: float 3s ease-in-out infinite;
+.about-name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.25;
 }
 
-.about-text h3 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+.about-role {
     color: var(--accent-color);
+    font-size: 0.92rem;
+    font-weight: 500;
+    margin-top: 0.3rem;
 }
 
-.about-text h4 {
-    font-size: 1.2rem;
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
-    color: #00a8cc;
-}
-
-.about-text p {
-    color: var(--text-secondary);
-    line-height: 1.8;
-    margin-bottom: 1.5rem;
-    font-size: 1rem;
-}
-
-.social-links {
+/* --- Social links --- */
+.about-social {
+    list-style: none;
     display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    margin-top: 2rem;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--card-border);
 }
 
 .social-link {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: rgba(0, 212, 255, 0.1);
-    border: 2px solid var(--accent-color);
-    border-radius: 50px;
-    color: var(--accent-color);
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
     text-decoration: none;
     transition: var(--transition);
-    font-weight: 500;
+}
+
+.social-icon {
+    width: 26px;
+    height: 26px;
+    display: block;
 }
 
 .social-link:hover {
-    background: var(--accent-color);
-    color: #0f3460;
-    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.14);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+/* --- Bio column --- */
+.about-intro {
+    font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin-bottom: var(--space-lg);
+}
+
+.about-stats {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.about-stats li {
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid var(--card-border);
+    border-left: 3px solid var(--accent-color);
+    border-radius: 10px;
+    padding: var(--space-md);
+}
+
+.stat-value {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--accent-color);
+    line-height: 1.1;
+}
+
+.stat-label {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.about-text h3 {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-xs);
+    color: var(--accent-color);
+}
+
+.about-text h3 + p {
+    margin-bottom: var(--space-lg);
+}
+
+.about-text p {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    font-size: 1rem;
 }
 
 /* Footer */
@@ -864,47 +1178,102 @@ section {
     background: var(--card-bg);
     backdrop-filter: blur(10px);
     border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 2rem;
+    border-radius: var(--radius-card);
+    padding: var(--space-xl);
     transition: var(--transition);
     animation: fadeInUp 0.6s ease-out;
+    /* column layout pins the CTA to the bottom so cards in a row line up */
+    display: flex;
+    flex-direction: column;
 }
 
 .youtube-card:hover {
     transform: translateY(-8px);
-    border-color: rgba(255, 0, 0, 0.3);
-    box-shadow: 0 20px 50px rgba(255, 0, 0, 0.1);
+    border-color: rgba(255, 0, 0, 0.35);
+    box-shadow: 0 20px 50px rgba(255, 0, 0, 0.12);
 }
 
 .youtube-header {
     text-align: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-md);
 }
 
-.youtube-icon {
-    font-size: 2.5rem;
-    display: inline-block;
-    margin-bottom: 1rem;
+/* Brand mark in a tile rather than a bare ▶️ emoji */
+.youtube-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    margin-bottom: var(--space-md);
+    border-radius: 14px;
+    background: #ff0000;
+    color: #fff;
+    box-shadow: 0 10px 26px rgba(255, 0, 0, 0.3);
 }
 
 .youtube-card h3 {
-    font-size: 1.5rem;
-    color: #ff0000;
-    margin-bottom: 0.5rem;
+    font-size: 1.35rem;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    line-height: 1.3;
+}
+
+.youtube-handle {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    word-break: break-word;
 }
 
 .youtube-description {
     color: var(--text-secondary);
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-md);
     font-size: 0.95rem;
     line-height: 1.6;
+    text-align: center;
 }
 
+/* Topics as chips instead of a "Topics: a, b, c" run-on line */
 .youtube-topics {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-bottom: var(--space-lg);
+}
+
+.youtube-topics li {
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-pill);
+    background: rgba(0, 212, 255, 0.1);
+    border: 1px solid var(--card-border);
     color: var(--accent-color);
-    font-size: 0.9rem;
-    margin-bottom: 1.5rem;
+    font-size: 0.78rem;
     font-weight: 500;
+    white-space: nowrap;
+}
+
+/* Brand-red CTA — the old one was cyan on a red-accented card */
+.btn-youtube {
+    gap: 0.55rem;
+    margin-top: auto;
+    width: 100%;
+    background: #ff0000;
+    color: #fff;
+    box-shadow: 0 10px 28px rgba(255, 0, 0, 0.28);
+}
+
+.btn-youtube:hover {
+    background: #d90000;
+    color: #fff;
+    transform: translateY(-3px);
+    box-shadow: 0 16px 38px rgba(255, 0, 0, 0.4);
+}
+
+.btn-youtube:focus-visible {
+    outline: 3px solid #ff4d4d;
+    outline-offset: 4px;
 }
 
 /* University Links Section */
@@ -1008,7 +1377,6 @@ section {
     }
 
     .card-buttons .btn,
-    .material-buttons .btn,
     .tricks-links .btn,
     .calculator-buttons .btn {
         width: 100%;
@@ -1031,29 +1399,17 @@ section {
     }
 
     .university-logo,
-    .material-icon,
-    .tricks-icon,
-    .resource-icon,
-    .youtube-icon,
     .link-icon {
         font-size: 2rem;
     }
 
     .test-card,
-    .material-card,
-    .resource-card,
-    .tricks-card,
     .youtube-card,
     .link-card,
     .calculator-card {
         padding: 1rem;
     }
 
-    .card-buttons,
-    .material-buttons {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-    }
 
     .tricks-links {
         gap: 0.5rem;
@@ -1075,56 +1431,16 @@ section {
         padding: 1.5rem;
     }
 
-    .whatsapp-card h2 {
-        font-size: 1.5rem;
-    }
 
-    .whatsapp-description {
-        font-size: 0.95rem;
-    }
 
-    .whatsapp-icon {
-        font-size: 2.5rem;
-    }
 
-    .whatsapp-features {
-        padding: 1rem;
-        font-size: 0.9rem;
-        line-height: 1.7;
-    }
 
-    .about-image {
-        margin-bottom: 1rem;
-    }
 
-    .profile-placeholder {
-        width: 150px;
-        height: 150px;
-        font-size: 3rem;
-    }
 
-    .about-text h3 {
-        font-size: 1.3rem;
-    }
 
-    .about-text h4 {
-        font-size: 0.95rem;
-    }
 
-    .about-text p {
-        font-size: 0.9rem;
-    }
 
-    .social-links {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
 
-    .social-link {
-        width: 100%;
-        padding: 0.6rem 1rem;
-        font-size: 0.85rem;
-    }
 
     .footer {
         padding: 1.5rem 0;
@@ -1169,46 +1485,17 @@ section {
     }
 
     .test-card,
-    .material-card,
-    .resource-card,
-    .tricks-card,
     .youtube-card,
     .link-card {
         padding: 1.25rem;
     }
 
-    .card-buttons,
-    .material-buttons {
-        grid-template-columns: 1fr;
-    }
 
-    .about-text h3 {
-        font-size: 1.5rem;
-    }
 
-    .about-text h4 {
-        font-size: 1rem;
-    }
 
-    .about-text p {
-        font-size: 0.95rem;
-    }
 
-    .social-links {
-        flex-direction: column;
-    }
 
-    .social-link {
-        width: 100%;
-        justify-content: center;
-        padding: 0.7rem 1.2rem;
-    }
 
-    .profile-placeholder {
-        width: 180px;
-        height: 180px;
-        font-size: 3.5rem;
-    }
 
     section {
         padding: 2.5rem 0;
@@ -1219,45 +1506,6 @@ section {
 @media (min-width: 481px) and (max-width: 768px) {
     .container {
         padding: 0 20px;
-    }
-
-    .hamburger {
-        display: flex;
-    }
-
-    .nav-menu {
-        position: fixed;
-        left: -100%;
-        top: 70px;
-        flex-direction: column;
-        background: rgba(15, 52, 96, 0.95);
-        width: min(92vw, 320px);
-        text-align: center;
-        transition: 0.3s;
-        gap: 0;
-        padding: 1rem 0;
-        max-height: calc(100vh - 70px);
-        overflow-y: auto;
-        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
-        border-radius: 0 0 16px 0;
-    }
-
-    .nav-menu.active {
-        left: 0;
-    }
-
-    .nav-link {
-        display: block;
-        padding: 0.85rem 0;
-        font-size: 0.95rem;
-    }
-
-    .nav-link::after {
-        display: none;
-    }
-
-    .nav-link:hover {
-        background: rgba(0, 212, 255, 0.1);
     }
 
     section {
@@ -1276,46 +1524,20 @@ section {
         font-size: 2rem;
     }
 
-    .tests-grid,
-    .materials-grid {
+    .tests-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 1.5rem;
     }
 
     .youtube-grid,
-    .links-grid,
-    .resources-grid {
+    .links-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 1.5rem;
     }
 
-    .about-content {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
 
-    .profile-placeholder {
-        width: 220px;
-        height: 220px;
-        font-size: 4.5rem;
-    }
 
-    .card-buttons,
-    .material-buttons,
-    .tricks-buttons {
-        grid-template-columns: 1fr 1fr;
-        gap: 0.8rem;
-    }
 
-    .social-links {
-        justify-content: center;
-        gap: 1rem;
-    }
-
-    .social-link {
-        padding: 0.75rem 1.25rem;
-        font-size: 0.95rem;
-    }
 
     .hero-icons {
         gap: 1rem;
@@ -1331,7 +1553,6 @@ section {
     }
 
     .card-buttons,
-    .material-buttons,
     .tricks-links,
     .calculator-buttons {
         grid-template-columns: 1fr;
@@ -1339,9 +1560,6 @@ section {
     }
 
     .test-card,
-    .material-card,
-    .resource-card,
-    .tricks-card,
     .youtube-card,
     .link-card {
         padding: 1.75rem;
@@ -1358,8 +1576,7 @@ section {
         font-size: 2.5rem;
     }
 
-    .tests-grid,
-    .materials-grid {
+    .tests-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 2rem;
     }
@@ -1370,20 +1587,8 @@ section {
         gap: 2rem;
     }
 
-    .resources-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
-    }
 
-    .about-content {
-        grid-template-columns: 1fr 1fr;
-        gap: 3rem;
-    }
 
-    .profile-placeholder {
-        width: 230px;
-        height: 230px;
-    }
 
     .hero-title {
         font-size: 3rem;
@@ -1405,8 +1610,7 @@ section {
         max-width: 1200px;
     }
 
-    .tests-grid,
-    .materials-grid {
+    .tests-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 2rem;
     }
@@ -1421,15 +1625,7 @@ section {
         gap: 2rem;
     }
 
-    .resources-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 2rem;
-    }
 
-    .about-content {
-        grid-template-columns: 1fr 1fr;
-        gap: 4rem;
-    }
 
     section {
         padding: 5rem 0;
@@ -1491,21 +1687,54 @@ section {
     }
 
     .test-card,
-    .material-card,
-    .resource-card,
-    .tricks-card,
     .youtube-card,
     .link-card {
         transition: all 0.2s ease;
     }
 
     .test-card:active,
-    .material-card:active,
-    .resource-card:active,
-    .tricks-card:active,
     .youtube-card:active,
     .link-card:active {
         transform: translateY(-4px);
+    }
+}
+
+/* Reduced Motion — honour the OS "reduce motion" setting.
+   Kills the looping float/bob animations and the JS card tilt (main.js checks
+   this same query), while leaving opacity fades intact so nothing stays hidden. */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .animate-icon,
+    .logo-icon,
+    .creator-photo {
+        animation: none !important;
+    }
+
+    .scroll-reveal {
+        opacity: 1;
+        transform: none;
+    }
+
+    .test-card:hover,
+    .youtube-card:hover,
+    .link-card:hover,
+    .whatsapp-card:hover,
+    .single-tricks-card:hover,
+    .btn:hover,
+    .social-link:hover {
+        transform: none;
     }
 }
 
@@ -1521,10 +1750,4 @@ section {
 
 .loading {
     animation: spin 1s linear infinite;
-}
-.social-icon {
-    width: 20px;
-    height: 20px;
-    vertical-align: middle;
-    margin-right: 6px;
 }

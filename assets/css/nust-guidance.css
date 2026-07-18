@@ -48,13 +48,55 @@ h1 { font-size: clamp(2rem, 5vw, 3.2rem); margin: 0 0 1rem; }
 label { font-weight: 600; color: var(--text-primary); }
 input, select, button { font: inherit; }
 input, select { width: 100%; padding: 0.9rem 1rem; border-radius: 12px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.06); color: var(--text-primary); }
+
+/* Custom select arrow.
+   The native control paints its arrow in OS light chrome, which reads as a
+   bright artifact on these dark cards. Hide it and draw our own — a pseudo
+   element can't be attached to <select>, hence the wrapper div. */
+.select-wrapper { position: relative; width: 100%; }
+
+.select-wrapper select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    /* Reserve room so a long option label never runs under the arrow */
+    padding-right: 2.75rem;
+}
+
+/* Legacy Edge/IE draws its own expand button on top of everything */
+.select-wrapper select::-ms-expand { display: none; }
+
+.select-wrapper::after {
+    content: "▼";
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    font-size: 0.7rem;
+    line-height: 1;
+    color: var(--accent-color);
+    /* Clicks must fall through to the select underneath */
+    pointer-events: none;
+}
+
+.select-wrapper select:hover { border-color: rgba(0, 212, 255, 0.45); }
+.select-wrapper select:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
+
+/* The dropdown list itself is OS-rendered; set colours for the platforms
+   that honour them so it isn't white-on-white. */
+.select-wrapper option { background: var(--secondary-color); color: var(--text-primary); }
+
 .input-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 .input-row input { flex: 1 1 260px; }
 .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0.8rem 1.2rem; border-radius: 999px; border: none; cursor: pointer; text-decoration: none; font-weight: 600; transition: transform 0.2s ease, box-shadow 0.2s ease; }
 .btn:hover { transform: translateY(-2px); }
 .btn-primary { background: linear-gradient(135deg, var(--accent-color), #00a8cc); color: #0f3460; }
 .btn-secondary { background: rgba(0, 212, 255, 0.12); color: var(--accent-color); border: 1px solid var(--border-color); }
-.btn-whatsapp { background: linear-gradient(135deg, #25d366, #128c7e); color: white; box-shadow: 0 10px 25px rgba(37, 211, 102, 0.25); }
+.btn-whatsapp { gap: 0.6rem; background: linear-gradient(135deg, #25d366, #128c7e); color: white; box-shadow: 0 10px 25px rgba(37, 211, 102, 0.25); }
+.btn-whatsapp:hover { box-shadow: 0 16px 34px rgba(37, 211, 102, 0.4); }
+.btn-whatsapp:focus-visible { outline: 3px solid #25d366; outline-offset: 3px; }
+/* Brand glyph inherits the button's text colour and never shrinks */
+.btn-brand-icon { flex: 0 0 auto; }
 .btn-small { padding: 0.7rem 1rem; min-height: 40px; }
 .contact-cta { display: flex; flex-direction: column; align-items: flex-start; gap: 0.45rem; margin-top: 1.25rem; }
 .contact-help { margin: 0; color: var(--text-secondary); font-size: 0.95rem; }
@@ -67,10 +109,22 @@ input, select { width: 100%; padding: 0.9rem 1rem; border-radius: 12px; border: 
 .badge { display: inline-block; margin-top: 0.6rem; padding: 0.3rem 0.6rem; font-size: 0.8rem; border-radius: 999px; background: rgba(0, 212, 255, 0.14); color: var(--accent-color); }
 .table-card { padding: 1.25rem; }
 .table-toolbar { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1rem; }
-.table-wrap { overflow-x: auto; }
+/* Right-edge fade signals there is more table to scroll to. It scrolls away with
+   the content because it is painted as a local background attachment. */
+.table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background:
+        linear-gradient(to right, var(--card-bg) 30%, rgba(22, 33, 62, 0)) left center / 24px 100% no-repeat local,
+        linear-gradient(to left, var(--card-bg) 30%, rgba(22, 33, 62, 0)) right center / 24px 100% no-repeat local,
+        radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0)) left center / 14px 100% no-repeat scroll,
+        radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0)) right center / 14px 100% no-repeat scroll;
+}
+.table-hint { display: none; color: var(--text-secondary); font-size: 0.85rem; margin: 0 0 0.6rem; }
 table { width: 100%; border-collapse: collapse; min-width: 640px; }
 th, td { padding: 0.85rem 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left; }
-th { cursor: pointer; color: var(--accent-color); font-weight: 700; }
+th { cursor: pointer; color: var(--accent-color); font-weight: 700; white-space: nowrap; }
+th:focus-visible { outline: 2px solid var(--accent-color); outline-offset: -2px; }
 tr:hover { background: rgba(255,255,255,0.03); }
 .table-notice, .credit-line { color: var(--text-secondary); font-size: 0.92rem; margin-top: 0.9rem; }
 .image-card { padding: 1.25rem; }
@@ -78,7 +132,9 @@ tr:hover { background: rgba(255,255,255,0.03); }
 .merit-figure img { border-radius: 12px; border: 1px solid var(--border-color); }
 .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
 .info-card { padding: 1rem 1.2rem; }
-.info-card summary { cursor: pointer; font-weight: 700; color: var(--accent-color); }
+/* 44px minimum touch target */
+.info-card summary { cursor: pointer; font-weight: 700; color: var(--accent-color); display: flex; align-items: center; min-height: 44px; padding: 0.25rem 0; }
+.info-card summary:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 2px; }
 .info-card p { color: var(--text-secondary); margin: 0.6rem 0 0; }
 .faq-section { padding-top: 0; }
 .faq-list { display: grid; gap: 0.9rem; margin-top: 1.5rem; }
@@ -98,6 +154,7 @@ tr:hover { background: rgba(255,255,255,0.03); }
 .footer { padding: 2rem 0 3rem; color: var(--text-secondary); text-align: center; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
 @media (max-width: 768px) {
+    .table-hint { display: block; }
     .hamburger { display: block; }
     .nav-menu { position: fixed; top: 64px; left: -100%; flex-direction: column; background: rgba(15, 52, 96, 0.96); width: 100%; padding: 1rem 0; gap: 0; transition: left 0.3s ease; }
     .nav-menu.active { left: 0; }
@@ -107,4 +164,14 @@ tr:hover { background: rgba(255,255,255,0.03); }
     .contact-cta { align-items: stretch; }
     .faq-question { padding: 1rem 1rem 1rem 1.05rem; }
     .faq-answer { padding: 0 1rem 1rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    .btn:hover { transform: none; }
 }
