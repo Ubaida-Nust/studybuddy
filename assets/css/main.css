@@ -15,6 +15,24 @@
     --card-border: rgba(0, 212, 255, 0.1);
     --button-shadow: 0 8px 32px rgba(0, 212, 255, 0.1);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Layout */
+    --navbar-height: 70px;
+    --content-max: 1200px;
+    --radius-card: 16px;
+    --radius-pill: 50px;
+
+    /* Spacing scale — use these instead of ad-hoc rem values */
+    --space-xs: 0.5rem;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --section-gap: clamp(3rem, 7vw, 5rem);
+
+    /* Elevation */
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.18);
+    --shadow-card-hover: 0 20px 50px rgba(0, 212, 255, 0.15);
 }
 
 html {
@@ -79,6 +97,7 @@ img {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1.5rem;
 }
 
 .logo {
@@ -100,7 +119,13 @@ img {
 .nav-menu {
     display: flex;
     list-style: none;
-    gap: 2rem;
+    align-items: center;
+    gap: clamp(0.75rem, 1.6vw, 2rem);
+    min-width: 0;
+}
+
+.nav-menu .nav-link {
+    white-space: nowrap;
 }
 
 .nav-link,
@@ -138,12 +163,18 @@ img {
     transition: width 0.3s ease;
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-link.active {
     color: var(--accent-color);
 }
 
-.nav-link:hover::after {
+.nav-link:hover::after,
+.nav-link.active::after {
     width: 100%;
+}
+
+.navbar.is-scrolled {
+    box-shadow: 0 12px 40px rgba(0, 212, 255, 0.1);
 }
 
 .hamburger {
@@ -168,9 +199,76 @@ img {
     transition: var(--transition);
 }
 
+/* Mobile navigation — phones through large tablets.
+   The 9-item menu needs ~1025px to sit on one line beside the logo, so the
+   off-canvas panel covers everything below that. */
+@media (max-width: 1024px) {
+    .hamburger {
+        display: flex;
+    }
+
+    .nav-menu {
+        position: fixed;
+        left: -100%;
+        top: var(--navbar-height, 70px);
+        flex-direction: column;
+        align-items: stretch;
+        background: rgba(15, 52, 96, 0.97);
+        backdrop-filter: blur(12px);
+        width: min(88vw, 320px);
+        text-align: left;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        gap: 0;
+        padding: 0.5rem 0 1rem;
+        max-height: calc(100dvh - var(--navbar-height, 70px));
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+        border-right: 1px solid var(--card-border);
+        border-radius: 0 0 16px 0;
+    }
+
+    .nav-menu.active {
+        left: 0;
+    }
+
+    .nav-link {
+        display: block;
+        padding: 0.9rem 1.25rem;
+        font-size: 1rem;
+    }
+
+    .nav-link::after {
+        display: none;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus-visible {
+        background: rgba(0, 212, 255, 0.1);
+    }
+
+    /* Dim the page behind the open menu */
+    .nav-scrim {
+        position: fixed;
+        inset: var(--navbar-height, 70px) 0 0;
+        background: rgba(5, 15, 30, 0.5);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+        z-index: 999;
+    }
+
+    body.menu-open .nav-scrim {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
 /* Home Section */
 .home {
     min-height: 100vh;
+    /* svh avoids the jump when mobile browser toolbars show/hide */
+    min-height: 100svh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -224,9 +322,11 @@ img {
 }
 
 .btn {
+    position: relative;
+    overflow: hidden;
     padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 50px;
+    border-radius: var(--radius-pill);
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
     cursor: pointer;
@@ -292,6 +392,23 @@ img {
     transform: translateY(-2px);
 }
 
+/* Ripple — element is injected by main.js on button hover */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: scale(0);
+    animation: ripple-animation 0.6s ease-out;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
 .btn-large {
     padding: 1rem 3rem;
     font-size: 1.1rem;
@@ -304,7 +421,8 @@ img {
 
 /* Section Styles */
 section {
-    padding: 5rem 0;
+    padding: var(--section-gap) 0;
+    scroll-margin-top: var(--navbar-height);
 }
 
 .section-title {
@@ -345,16 +463,24 @@ section {
     background: var(--card-bg);
     backdrop-filter: blur(10px);
     border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 2rem;
+    border-radius: var(--radius-card);
+    padding: var(--space-xl);
     transition: var(--transition);
     animation: fadeInUp 0.6s ease-out;
+    /* column layout pins the button block to the bottom so cards in a row line up */
+    display: flex;
+    flex-direction: column;
+}
+
+.test-card .card-buttons {
+    margin-top: auto;
+    padding-top: var(--space-xs);
 }
 
 .test-card:hover {
     transform: translateY(-8px);
     border-color: rgba(0, 212, 255, 0.3);
-    box-shadow: 0 20px 50px rgba(0, 212, 255, 0.15);
+    box-shadow: var(--shadow-card-hover);
 }
 
 .card-header {
@@ -387,8 +513,10 @@ section {
 
 .card-buttons {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    /* auto-fit keeps odd button counts from leaving a lonely stretched cell */
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: var(--space-sm);
+    align-content: start;
 }
 
 /* Materials Section */
@@ -396,54 +524,62 @@ section {
     background: linear-gradient(135deg, rgba(22, 33, 62, 0.5), rgba(15, 52, 96, 0.5));
 }
 
-.materials-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
+/* Coming Soon panels — shared by the Materials and Resources sections */
+.coming-soon-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-xl);
 }
 
-.material-card {
+.coming-soon-card {
+    position: relative;
     background: var(--card-bg);
     backdrop-filter: blur(10px);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 2rem;
+    border: 1px dashed rgba(0, 212, 255, 0.35);
+    border-radius: var(--radius-card);
+    padding: clamp(2rem, 5vw, 3rem);
     text-align: center;
-    transition: var(--transition);
+    max-width: 640px;
+    width: 100%;
     animation: fadeInUp 0.6s ease-out;
 }
 
-.material-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(0, 212, 255, 0.3);
-    box-shadow: 0 20px 50px rgba(0, 212, 255, 0.15);
+.coming-soon-badge {
+    display: inline-block;
+    margin-bottom: var(--space-md);
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius-pill);
+    background: rgba(0, 212, 255, 0.14);
+    border: 1px solid var(--card-border);
+    color: var(--accent-color);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
 }
 
-.material-header {
-    margin-bottom: 1rem;
-}
-
-.material-icon {
-    font-size: 3rem;
+.coming-soon-icon {
     display: block;
-    margin-bottom: 1rem;
+    font-size: clamp(2.5rem, 8vw, 3.25rem);
+    margin-bottom: var(--space-md);
+    opacity: 0.9;
 }
 
-.material-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 0.5rem;
+.coming-soon-card h3 {
+    font-size: clamp(1.15rem, 3.5vw, 1.5rem);
+    margin-bottom: var(--space-sm);
+    color: var(--accent-color);
+    line-height: 1.35;
 }
 
-.material-description {
+.coming-soon-card p {
     color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
-}
-
-.material-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
+    font-size: 0.98rem;
+    line-height: 1.7;
+    margin-bottom: var(--space-lg);
+    max-width: 48ch;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* WhatsApp Community Section */
@@ -542,46 +678,6 @@ section {
     background: linear-gradient(135deg, rgba(15, 52, 96, 0.5), rgba(22, 33, 62, 0.5));
 }
 
-.resources-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
-}
-
-.resource-card {
-    background: var(--card-bg);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 2.5rem 2rem;
-    text-align: center;
-    transition: var(--transition);
-    animation: fadeInUp 0.6s ease-out;
-}
-
-.resource-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(0, 212, 255, 0.3);
-    box-shadow: 0 20px 50px rgba(0, 212, 255, 0.15);
-}
-
-.resource-icon {
-    font-size: 3.5rem;
-    margin-bottom: 1.5rem;
-    display: block;
-}
-
-.resource-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 0.75rem;
-}
-
-.resource-card p {
-    color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
-}
-
 /* About Section */
 .about {
     background: linear-gradient(135deg, rgba(22, 33, 62, 0.5), rgba(15, 52, 96, 0.5));
@@ -610,21 +706,6 @@ section {
     animation: float 3s ease-in-out infinite;
     display: block;
     margin: 0 auto;
-}
-
-.profile-placeholder {
-    width: 250px;
-    height: 250px;
-    margin: 0 auto;
-    background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.1));
-    border: 2px solid var(--accent-color);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 5rem;
-    box-shadow: 0 20px 50px rgba(0, 212, 255, 0.15);
-    animation: float 3s ease-in-out infinite;
 }
 
 .about-text h3 {
@@ -657,7 +738,9 @@ section {
 .social-link {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.5rem;
+    min-height: 44px;
     padding: 0.75rem 1.5rem;
     background: rgba(0, 212, 255, 0.1);
     border: 2px solid var(--accent-color);
@@ -1008,7 +1091,6 @@ section {
     }
 
     .card-buttons .btn,
-    .material-buttons .btn,
     .tricks-links .btn,
     .calculator-buttons .btn {
         width: 100%;
@@ -1031,29 +1113,18 @@ section {
     }
 
     .university-logo,
-    .material-icon,
-    .tricks-icon,
-    .resource-icon,
     .youtube-icon,
     .link-icon {
         font-size: 2rem;
     }
 
     .test-card,
-    .material-card,
-    .resource-card,
-    .tricks-card,
     .youtube-card,
     .link-card,
     .calculator-card {
         padding: 1rem;
     }
 
-    .card-buttons,
-    .material-buttons {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-    }
 
     .tricks-links {
         gap: 0.5rem;
@@ -1097,11 +1168,6 @@ section {
         margin-bottom: 1rem;
     }
 
-    .profile-placeholder {
-        width: 150px;
-        height: 150px;
-        font-size: 3rem;
-    }
 
     .about-text h3 {
         font-size: 1.3rem;
@@ -1169,18 +1235,11 @@ section {
     }
 
     .test-card,
-    .material-card,
-    .resource-card,
-    .tricks-card,
     .youtube-card,
     .link-card {
         padding: 1.25rem;
     }
 
-    .card-buttons,
-    .material-buttons {
-        grid-template-columns: 1fr;
-    }
 
     .about-text h3 {
         font-size: 1.5rem;
@@ -1204,11 +1263,6 @@ section {
         padding: 0.7rem 1.2rem;
     }
 
-    .profile-placeholder {
-        width: 180px;
-        height: 180px;
-        font-size: 3.5rem;
-    }
 
     section {
         padding: 2.5rem 0;
@@ -1219,45 +1273,6 @@ section {
 @media (min-width: 481px) and (max-width: 768px) {
     .container {
         padding: 0 20px;
-    }
-
-    .hamburger {
-        display: flex;
-    }
-
-    .nav-menu {
-        position: fixed;
-        left: -100%;
-        top: 70px;
-        flex-direction: column;
-        background: rgba(15, 52, 96, 0.95);
-        width: min(92vw, 320px);
-        text-align: center;
-        transition: 0.3s;
-        gap: 0;
-        padding: 1rem 0;
-        max-height: calc(100vh - 70px);
-        overflow-y: auto;
-        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
-        border-radius: 0 0 16px 0;
-    }
-
-    .nav-menu.active {
-        left: 0;
-    }
-
-    .nav-link {
-        display: block;
-        padding: 0.85rem 0;
-        font-size: 0.95rem;
-    }
-
-    .nav-link::after {
-        display: none;
-    }
-
-    .nav-link:hover {
-        background: rgba(0, 212, 255, 0.1);
     }
 
     section {
@@ -1276,15 +1291,13 @@ section {
         font-size: 2rem;
     }
 
-    .tests-grid,
-    .materials-grid {
+    .tests-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 1.5rem;
     }
 
     .youtube-grid,
-    .links-grid,
-    .resources-grid {
+    .links-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 1.5rem;
     }
@@ -1294,18 +1307,6 @@ section {
         gap: 2rem;
     }
 
-    .profile-placeholder {
-        width: 220px;
-        height: 220px;
-        font-size: 4.5rem;
-    }
-
-    .card-buttons,
-    .material-buttons,
-    .tricks-buttons {
-        grid-template-columns: 1fr 1fr;
-        gap: 0.8rem;
-    }
 
     .social-links {
         justify-content: center;
@@ -1331,7 +1332,6 @@ section {
     }
 
     .card-buttons,
-    .material-buttons,
     .tricks-links,
     .calculator-buttons {
         grid-template-columns: 1fr;
@@ -1339,9 +1339,6 @@ section {
     }
 
     .test-card,
-    .material-card,
-    .resource-card,
-    .tricks-card,
     .youtube-card,
     .link-card {
         padding: 1.75rem;
@@ -1358,8 +1355,7 @@ section {
         font-size: 2.5rem;
     }
 
-    .tests-grid,
-    .materials-grid {
+    .tests-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 2rem;
     }
@@ -1370,20 +1366,12 @@ section {
         gap: 2rem;
     }
 
-    .resources-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
-    }
 
     .about-content {
         grid-template-columns: 1fr 1fr;
         gap: 3rem;
     }
 
-    .profile-placeholder {
-        width: 230px;
-        height: 230px;
-    }
 
     .hero-title {
         font-size: 3rem;
@@ -1405,8 +1393,7 @@ section {
         max-width: 1200px;
     }
 
-    .tests-grid,
-    .materials-grid {
+    .tests-grid {
         grid-template-columns: repeat(3, 1fr);
         gap: 2rem;
     }
@@ -1421,10 +1408,6 @@ section {
         gap: 2rem;
     }
 
-    .resources-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 2rem;
-    }
 
     .about-content {
         grid-template-columns: 1fr 1fr;
@@ -1491,21 +1474,55 @@ section {
     }
 
     .test-card,
-    .material-card,
-    .resource-card,
-    .tricks-card,
     .youtube-card,
     .link-card {
         transition: all 0.2s ease;
     }
 
     .test-card:active,
-    .material-card:active,
-    .resource-card:active,
-    .tricks-card:active,
     .youtube-card:active,
     .link-card:active {
         transform: translateY(-4px);
+    }
+}
+
+/* Reduced Motion — honour the OS "reduce motion" setting.
+   Kills the looping float/bob animations and the JS card tilt (main.js checks
+   this same query), while leaving opacity fades intact so nothing stays hidden. */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .animate-icon,
+    .logo-icon,
+    .whatsapp-icon,
+    .creator-photo {
+        animation: none !important;
+    }
+
+    .scroll-reveal {
+        opacity: 1;
+        transform: none;
+    }
+
+    .test-card:hover,
+    .youtube-card:hover,
+    .link-card:hover,
+    .whatsapp-card:hover,
+    .single-tricks-card:hover,
+    .btn:hover,
+    .social-link:hover {
+        transform: none;
     }
 }
 
@@ -1521,10 +1538,4 @@ section {
 
 .loading {
     animation: spin 1s linear infinite;
-}
-.social-icon {
-    width: 20px;
-    height: 20px;
-    vertical-align: middle;
-    margin-right: 6px;
 }
