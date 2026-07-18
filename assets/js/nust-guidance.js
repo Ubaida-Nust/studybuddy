@@ -201,4 +201,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const isActive = navMenu.classList.toggle('active');
     hamburger.setAttribute('aria-expanded', String(isActive));
   });
+
+  // Footer copyright year. The markup carries the current year as a no-JS fallback.
+  document.querySelectorAll('.js-year').forEach(el => {
+    el.textContent = new Date().getFullYear();
+  });
 });

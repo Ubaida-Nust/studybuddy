@@ -251,6 +251,14 @@
     });
 
     /* ---------------------------------------------------------------
+       Footer copyright year
+       The markup carries the current year as a fallback for no-JS.
+    --------------------------------------------------------------- */
+    document.querySelectorAll('.js-year').forEach(el => {
+        el.textContent = new Date().getFullYear();
+    });
+
+    /* ---------------------------------------------------------------
        External links open in a new tab, safely
     --------------------------------------------------------------- */
     document.querySelectorAll('a[href^="http"]').forEach(link => {
