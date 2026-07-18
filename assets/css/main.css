@@ -511,12 +511,102 @@ section {
     line-height: 1.6;
 }
 
-.card-buttons {
+/* Resource links inside cards.
+   These are lists of links with long, uneven labels ("Basic Math / Quantitative
+   Lec"), which is exactly what centred pills handle worst — a two-column pill
+   grid wrapped them onto three lines and stranded odd counts at half width.
+   Full-width rows give every label the same left edge and room to breathe. */
+.card-buttons,
+.tricks-links {
     display: grid;
-    /* auto-fit keeps odd button counts from leaving a lonely stretched cell */
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: var(--space-sm);
+    grid-template-columns: 1fr;
+    gap: var(--space-xs);
     align-content: start;
+}
+
+.card-buttons .btn,
+.tricks-links .btn {
+    /* Flex rather than fixed grid tracks: a link whose label is a bare text
+       node still lays out correctly instead of collapsing to one char per line. */
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+    background: rgba(0, 212, 255, 0.05);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: left;
+    line-height: 1.4;
+    white-space: normal;
+    transition: var(--transition);
+}
+
+/* Fixed-width icon slot so every label starts on the same left edge */
+.card-buttons .btn > .btn-icon,
+.tricks-links .btn > .btn-icon {
+    flex: 0 0 1.25rem;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.card-buttons .btn > span:not(.btn-icon),
+.tricks-links .btn > span:not(.btn-icon) {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.card-buttons .btn::after,
+.tricks-links .btn::after {
+    flex: 0 0 auto;
+}
+
+/* Chevron affordance */
+.card-buttons .btn::after,
+.tricks-links .btn::after {
+    content: '→';
+    color: var(--accent-color);
+    opacity: 0.5;
+    font-size: 0.95rem;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.card-buttons .btn:hover,
+.tricks-links .btn:hover,
+.card-buttons .btn:focus-visible,
+.tricks-links .btn:focus-visible {
+    background: rgba(0, 212, 255, 0.12);
+    border-color: rgba(0, 212, 255, 0.45);
+    transform: none;
+    box-shadow: none;
+    color: var(--text-primary);
+}
+
+.card-buttons .btn:hover::after,
+.tricks-links .btn:hover::after {
+    opacity: 1;
+    transform: translateX(3px);
+}
+
+/* The main drive/material link is the primary action in each card */
+.card-buttons .btn.is-primary {
+    background: rgba(0, 212, 255, 0.16);
+    border-color: rgba(0, 212, 255, 0.5);
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.card-buttons .btn.is-primary:hover {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #0f3460;
+}
+
+.card-buttons .btn.is-primary:hover::after {
+    color: #0f3460;
 }
 
 /* Materials Section */
@@ -685,76 +775,166 @@ section {
 
 .about-content {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-    align-items: center;
+    /* min(100%, 260px) means the aside can never demand more width than the
+       container has, so this collapses to one column on its own — the media
+       query below just sets the exact point and the text-column minimum. */
+    grid-template-columns: minmax(min(100%, 260px), 300px) 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
     margin-top: 3rem;
 }
 
-.about-image {
+@media (max-width: 860px) {
+    .about-content {
+        grid-template-columns: 1fr;
+        gap: var(--space-xl);
+        justify-items: center;
+    }
+
+    .about-card {
+        max-width: 380px;
+        width: 100%;
+    }
+
+    .about-text {
+        max-width: 640px;
+    }
+}
+
+@media (max-width: 860px) {
+}
+
+/* --- Profile card --- */
+.about-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-card);
+    padding: var(--space-xl) var(--space-lg);
     text-align: center;
-    position: relative;
+    box-shadow: var(--shadow-card);
 }
 
 .creator-photo {
-    width: 250px;
-    height: 250px;
+    width: 100%;
+    max-width: 280px;
+    aspect-ratio: 1;
+    height: auto;
     object-fit: cover;
-    border-radius: 16px;
+    /* The source is a wide environmental shot; bias the crop upward so the
+       subject is not sliced off at the chin. */
+    object-position: center 30%;
+    border-radius: 14px;
     border: 2px solid var(--accent-color);
-    box-shadow: 0 20px 50px rgba(0, 212, 255, 0.15);
-    animation: float 3s ease-in-out infinite;
+    box-shadow: 0 16px 40px rgba(0, 212, 255, 0.15);
     display: block;
-    margin: 0 auto;
+    margin: 0 auto var(--space-lg);
 }
 
-.about-text h3 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+.about-name {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.25;
+}
+
+.about-role {
     color: var(--accent-color);
+    font-size: 0.92rem;
+    font-weight: 500;
+    margin-top: 0.3rem;
 }
 
-.about-text h4 {
-    font-size: 1.2rem;
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
-    color: #00a8cc;
-}
-
-.about-text p {
-    color: var(--text-secondary);
-    line-height: 1.8;
-    margin-bottom: 1.5rem;
-    font-size: 1rem;
-}
-
-.social-links {
-    display: flex;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    margin-top: 2rem;
+/* --- Social links --- */
+.about-social {
+    list-style: none;
+    display: grid;
+    gap: var(--space-xs);
+    margin-top: var(--space-lg);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--card-border);
 }
 
 .social-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.55rem;
+    width: 100%;
     min-height: 44px;
-    padding: 0.75rem 1.5rem;
-    background: rgba(0, 212, 255, 0.1);
-    border: 2px solid var(--accent-color);
-    border-radius: 50px;
+    padding: 0.6rem 1rem;
+    background: rgba(0, 212, 255, 0.08);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
     color: var(--accent-color);
     text-decoration: none;
     transition: var(--transition);
     font-weight: 500;
+    font-size: 0.95rem;
 }
 
 .social-link:hover {
     background: var(--accent-color);
+    border-color: var(--accent-color);
     color: #0f3460;
-    transform: translateY(-3px);
+}
+
+/* --- Bio column --- */
+.about-intro {
+    font-size: clamp(1.05rem, 2.4vw, 1.3rem);
+    line-height: 1.6;
+    color: var(--text-primary);
+    margin-bottom: var(--space-lg);
+}
+
+.about-stats {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+.about-stats li {
+    background: rgba(0, 212, 255, 0.05);
+    border: 1px solid var(--card-border);
+    border-left: 3px solid var(--accent-color);
+    border-radius: 10px;
+    padding: var(--space-md);
+}
+
+.stat-value {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--accent-color);
+    line-height: 1.1;
+}
+
+.stat-label {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.about-text h3 {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-xs);
+    color: var(--accent-color);
+}
+
+.about-text h3 + p {
+    margin-bottom: var(--space-lg);
+}
+
+.about-text p {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    font-size: 1rem;
 }
 
 /* Footer */
@@ -1164,33 +1344,12 @@ section {
         line-height: 1.7;
     }
 
-    .about-image {
-        margin-bottom: 1rem;
-    }
 
 
-    .about-text h3 {
-        font-size: 1.3rem;
-    }
 
-    .about-text h4 {
-        font-size: 0.95rem;
-    }
 
-    .about-text p {
-        font-size: 0.9rem;
-    }
 
-    .social-links {
-        flex-direction: column;
-        gap: 0.75rem;
-    }
 
-    .social-link {
-        width: 100%;
-        padding: 0.6rem 1rem;
-        font-size: 0.85rem;
-    }
 
     .footer {
         padding: 1.5rem 0;
@@ -1241,27 +1400,10 @@ section {
     }
 
 
-    .about-text h3 {
-        font-size: 1.5rem;
-    }
 
-    .about-text h4 {
-        font-size: 1rem;
-    }
 
-    .about-text p {
-        font-size: 0.95rem;
-    }
 
-    .social-links {
-        flex-direction: column;
-    }
 
-    .social-link {
-        width: 100%;
-        justify-content: center;
-        padding: 0.7rem 1.2rem;
-    }
 
 
     section {
@@ -1302,21 +1444,9 @@ section {
         gap: 1.5rem;
     }
 
-    .about-content {
-        grid-template-columns: 1fr;
-        gap: 2rem;
-    }
 
 
-    .social-links {
-        justify-content: center;
-        gap: 1rem;
-    }
 
-    .social-link {
-        padding: 0.75rem 1.25rem;
-        font-size: 0.95rem;
-    }
 
     .hero-icons {
         gap: 1rem;
@@ -1367,10 +1497,6 @@ section {
     }
 
 
-    .about-content {
-        grid-template-columns: 1fr 1fr;
-        gap: 3rem;
-    }
 
 
     .hero-title {
@@ -1409,10 +1535,6 @@ section {
     }
 
 
-    .about-content {
-        grid-template-columns: 1fr 1fr;
-        gap: 4rem;
-    }
 
     section {
         padding: 5rem 0;
