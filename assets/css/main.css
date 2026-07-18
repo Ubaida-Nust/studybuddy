@@ -701,13 +701,13 @@ section {
 }
 
 .whatsapp-card {
-    background: linear-gradient(135deg, rgba(37, 211, 102, 0.2), rgba(22, 33, 62, 0.5));
+    background: linear-gradient(135deg, rgba(37, 211, 102, 0.16), rgba(22, 33, 62, 0.55));
     backdrop-filter: blur(10px);
-    border: 2px solid rgba(37, 211, 102, 0.3);
+    border: 1px solid rgba(37, 211, 102, 0.3);
     border-radius: 20px;
-    padding: 3rem;
+    padding: clamp(1.75rem, 5vw, 3rem);
     text-align: center;
-    max-width: 600px;
+    max-width: 640px;
     width: 100%;
     animation: slideUp 0.8s ease-out;
     transition: var(--transition);
@@ -715,52 +715,101 @@ section {
 }
 
 .whatsapp-card:hover {
-    transform: translateY(-10px);
+    transform: translateY(-6px);
     border-color: rgba(37, 211, 102, 0.5);
     box-shadow: 0 30px 80px rgba(37, 211, 102, 0.2);
 }
 
 .whatsapp-header {
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-lg);
 }
 
-.whatsapp-icon {
-    font-size: 3.5rem;
-    display: block;
-    margin-bottom: 1rem;
-    animation: float 3s ease-in-out infinite;
+/* Brand logo in a rounded tile rather than a bare emoji */
+.whatsapp-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    margin-bottom: var(--space-md);
+    border-radius: 18px;
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    color: #fff;
+    box-shadow: 0 12px 30px rgba(37, 211, 102, 0.35);
 }
 
 .whatsapp-card h2 {
-    font-size: 2rem;
+    font-family: 'Montserrat', sans-serif;
+    /* clamp keeps the heading off a third line on small phones */
+    font-size: clamp(1.4rem, 5vw, 2rem);
     color: #25d366;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-sm);
     font-weight: 700;
+    line-height: 1.25;
 }
 
 .whatsapp-description {
     color: var(--text-secondary);
-    font-size: 1.05rem;
+    font-size: 1rem;
     line-height: 1.7;
-    margin-bottom: 1.5rem;
+    max-width: 46ch;
+    margin: 0 auto;
 }
 
+/* A real list, two columns where there is room, so the card stays short */
 .whatsapp-features {
-    background: rgba(37, 211, 102, 0.1);
-    border-left: 4px solid #25d366;
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin-bottom: 2rem;
-    color: var(--text-secondary);
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: var(--space-xs) var(--space-md);
     text-align: left;
-    display: inline-block;
-    line-height: 2;
-    font-size: 0.95rem;
+    margin-bottom: var(--space-xl);
 }
 
-.whatsapp-features strong {
+.whatsapp-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    padding: 0.35rem 0;
+}
+
+.whatsapp-features li::before {
+    content: '✓';
+    flex: 0 0 auto;
     color: #25d366;
-    margin-right: 0.5rem;
+    font-weight: 700;
+}
+
+/* WhatsApp-green CTA — the old one was cyan inside a green section */
+.btn-whatsapp {
+    gap: 0.6rem;
+    background: linear-gradient(135deg, #25d366, #128c7e);
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(37, 211, 102, 0.3);
+}
+
+.btn-whatsapp:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(37, 211, 102, 0.45);
+    color: #fff;
+}
+
+.btn-whatsapp:focus-visible {
+    outline: 3px solid #25d366;
+    outline-offset: 4px;
+}
+
+.btn-brand-icon {
+    flex: 0 0 auto;
+}
+
+.whatsapp-note {
+    margin-top: var(--space-md);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
 }
 
 /* Resources Section */
@@ -1328,23 +1377,9 @@ section {
         padding: 1.5rem;
     }
 
-    .whatsapp-card h2 {
-        font-size: 1.5rem;
-    }
 
-    .whatsapp-description {
-        font-size: 0.95rem;
-    }
 
-    .whatsapp-icon {
-        font-size: 2.5rem;
-    }
 
-    .whatsapp-features {
-        padding: 1rem;
-        font-size: 0.9rem;
-        line-height: 1.7;
-    }
 
 
 
@@ -1629,7 +1664,6 @@ section {
 
     .animate-icon,
     .logo-icon,
-    .whatsapp-icon,
     .creator-photo {
         animation: none !important;
     }
