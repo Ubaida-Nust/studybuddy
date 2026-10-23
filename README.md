@@ -8,7 +8,7 @@ No build step — plain HTML, CSS, and JS served directly.
 ```
 .
 ├── index.html               Landing page (tests, materials, calculator, about)
-├── nust-guidance.html       NUST 2025 merit predictor + sortable merit table
+├── nust-guidance.html       Study timer + NUST 2025 merit predictor and table
 ├── robots.txt
 ├── sitemap.xml
 ├── favicon.ico / favicon.svg
@@ -20,7 +20,7 @@ No build step — plain HTML, CSS, and JS served directly.
     ├── js/
     │   ├── main.js              Nav, scroll reveal, and UI effects
     │   ├── nust-merit-data.js   NUST 2025 closing merit dataset
-    │   └── nust-guidance.js     Predictor, merit table, lightbox, FAQ
+    │   └── nust-guidance.js     Study timer, predictor, merit table, lightbox, FAQ
     └── images/
         ├── apple-touch-icon.png      180x180, iOS home-screen icon
         ├── profile.jpg, profile-250.webp, profile-500.webp

@@ -47,6 +47,23 @@
     </nav>
 
     <main>
+        <section class="study-timer" aria-labelledby="studyTimerHeading">
+            <div class="container">
+                <div class="study-timer-card">
+                    <div class="study-timer-copy">
+                        <p class="eyebrow">Focus session</p>
+                        <h2 id="studyTimerHeading">Study timer</h2>
+                    </div>
+                    <p class="study-timer-display" id="studyTimerDisplay" role="timer" aria-label="Elapsed study time">00:00:00</p>
+                    <div class="study-timer-controls">
+                        <button type="button" class="btn btn-primary" id="studyTimerStart">Start</button>
+                        <button type="button" class="btn btn-secondary" id="studyTimerPause" disabled>Pause</button>
+                        <button type="button" class="btn btn-secondary" id="studyTimerReset" disabled>Reset</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="hero">
             <div class="container">
                 <p class="eyebrow">NUST UG Admissions 2025</p>

@@ -165,6 +165,59 @@ function setupLightbox() {
   });
 }
 
+function setupStudyTimer() {
+  const display = document.getElementById('studyTimerDisplay');
+  const startButton = document.getElementById('studyTimerStart');
+  const pauseButton = document.getElementById('studyTimerPause');
+  const resetButton = document.getElementById('studyTimerReset');
+  if (!display || !startButton || !pauseButton || !resetButton) return;
+
+  let elapsedMilliseconds = 0;
+  let startedAt = 0;
+  let intervalId;
+
+  const render = () => {
+    const elapsedSeconds = Math.floor((elapsedMilliseconds + (startedAt ? Date.now() - startedAt : 0)) / 1000);
+    const hours = Math.floor(elapsedSeconds / 3600);
+    const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+    const seconds = elapsedSeconds % 60;
+
+    display.textContent = [hours, minutes, seconds]
+      .map(value => String(value).padStart(2, '0'))
+      .join(':');
+  };
+
+  startButton.addEventListener('click', () => {
+    if (startedAt) return;
+    startedAt = Date.now();
+    intervalId = window.setInterval(render, 250);
+    startButton.disabled = true;
+    pauseButton.disabled = false;
+    resetButton.disabled = false;
+    render();
+  });
+
+  pauseButton.addEventListener('click', () => {
+    if (!startedAt) return;
+    elapsedMilliseconds += Date.now() - startedAt;
+    startedAt = 0;
+    window.clearInterval(intervalId);
+    startButton.disabled = false;
+    pauseButton.disabled = true;
+    render();
+  });
+
+  resetButton.addEventListener('click', () => {
+    elapsedMilliseconds = 0;
+    startedAt = 0;
+    window.clearInterval(intervalId);
+    startButton.disabled = false;
+    pauseButton.disabled = true;
+    resetButton.disabled = true;
+    render();
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const predictorForm = document.getElementById('predictorForm');
   const aggregateInput = document.getElementById('aggregateInput');
@@ -196,6 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTable();
   setupFaqAccordion();
   setupLightbox();
+  setupStudyTimer();
 
   hamburger?.addEventListener('click', () => {
     const isActive = navMenu.classList.toggle('active');
