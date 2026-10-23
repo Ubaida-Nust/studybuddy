@@ -18,6 +18,63 @@
     const navMenu = document.getElementById('navMenu');
     const navbar = document.querySelector('.navbar');
 
+    /* ---------------------------------------------------------------
+       Study timer
+    --------------------------------------------------------------- */
+    const timerDisplay = document.getElementById('studyTimerDisplay');
+    const timerStart = document.getElementById('studyTimerStart');
+    const timerPause = document.getElementById('studyTimerPause');
+    const timerReset = document.getElementById('studyTimerReset');
+
+    if (timerDisplay && timerStart && timerPause && timerReset) {
+        let elapsedMilliseconds = 0;
+        let startedAt = 0;
+        let intervalId;
+
+        const renderTimer = () => {
+            const elapsedSeconds = Math.floor(
+                (elapsedMilliseconds + (startedAt ? Date.now() - startedAt : 0)) / 1000
+            );
+            const hours = Math.floor(elapsedSeconds / 3600);
+            const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+            const seconds = elapsedSeconds % 60;
+
+            timerDisplay.textContent = [hours, minutes, seconds]
+                .map(value => String(value).padStart(2, '0'))
+                .join(':');
+        };
+
+        timerStart.addEventListener('click', () => {
+            if (startedAt) return;
+            startedAt = Date.now();
+            intervalId = window.setInterval(renderTimer, 250);
+            timerStart.disabled = true;
+            timerPause.disabled = false;
+            timerReset.disabled = false;
+            renderTimer();
+        });
+
+        timerPause.addEventListener('click', () => {
+            if (!startedAt) return;
+            elapsedMilliseconds += Date.now() - startedAt;
+            startedAt = 0;
+            window.clearInterval(intervalId);
+            timerStart.disabled = false;
+            timerPause.disabled = true;
+            renderTimer();
+        });
+
+        timerReset.addEventListener('click', () => {
+            elapsedMilliseconds = 0;
+            startedAt = 0;
+            window.clearInterval(intervalId);
+            timerStart.disabled = false;
+            timerPause.disabled = true;
+            timerReset.disabled = true;
+            renderTimer();
+        });
+    }
+
     function syncNavbarHeight() {
         if (!navbar) return;
         document.documentElement.style.setProperty('--navbar-height', `${navbar.offsetHeight}px`);

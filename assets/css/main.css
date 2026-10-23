@@ -74,6 +74,55 @@ body::before {
     padding: 0 20px;
 }
 
+.study-timer {
+    padding: 1.5rem 0 0;
+}
+
+.study-timer-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 1.25rem 1.5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+}
+
+.study-timer-copy .eyebrow {
+    margin-bottom: 0.25rem;
+}
+
+.study-timer-copy h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+}
+
+.study-timer-display {
+    color: var(--accent-color);
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+}
+
+.study-timer-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+.study-timer-controls .btn {
+    min-width: 82px;
+}
+
+.study-timer-controls .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+    transform: none;
+}
+
 /* Navigation Bar */
 .navbar {
     position: sticky;
@@ -834,6 +883,19 @@ section {
 }
 
 @media (max-width: 860px) {
+    .study-timer-card {
+        flex-wrap: wrap;
+    }
+
+    .study-timer-display {
+        order: 1;
+        flex: 1 0 100%;
+    }
+
+    .study-timer-controls {
+        order: 2;
+    }
+
     .about-content {
         grid-template-columns: 1fr;
         gap: var(--space-xl);
